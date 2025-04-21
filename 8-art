@@ -1,0 +1,54 @@
+import numpy as np
+
+class ART1:
+    def _init_(self, input_size, vigilance=0.75):
+        self.input_size = input_size
+        self.vigilance = vigilance
+        self.categories = []  # List to store category weights
+
+    def _match(self, input_vector, weights):
+        # Intersection of input and weights
+        intersection = np.minimum(input_vector, weights)
+        match_score = np.sum(intersection) / np.sum(input_vector)
+        return match_score
+
+    def _create_new_category(self, input_vector):
+        self.categories.append(np.copy(input_vector))
+
+    def train(self, inputs):
+        for input_vector in inputs:
+            input_vector = np.array(input_vector)
+            matched = False
+
+            for idx, weights in enumerate(self.categories):
+                match_score = self._match(input_vector, weights)
+
+                if match_score >= self.vigilance:
+                    # Resonance occurs - update weights
+                    self.categories[idx] = np.minimum(input_vector, weights)
+                    print(f"Input {input_vector.tolist()} matched category {idx}")
+                    matched = True
+                    break
+
+            if not matched:
+                self._create_new_category(input_vector)
+                print(f"Input {input_vector.tolist()} created new category {len(self.categories)-1}")
+
+    def print_categories(self):
+        print("\nFinal Categories Learned:")
+        for idx, weights in enumerate(self.categories):
+            print(f"Category {idx}: {weights.tolist()}")
+
+# Example binary inputs (unsupervised learning)
+inputs = [
+    [1, 0, 0, 1, 0],
+    [1, 0, 0, 1, 1],
+    [0, 1, 1, 0, 0],
+    [0, 1, 1, 0, 1],
+    [1, 0, 0, 1, 0]  # Similar to first input
+]
+
+# Create and train ART1 network
+art = ART1(input_size=5, vigilance=0.8)
+art.train(inputs)
+art.print_categories()
