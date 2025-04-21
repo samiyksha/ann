@@ -1,0 +1,50 @@
+import numpy as np
+
+# ASCII binary representation of digits 0-9
+digits = {
+    '0': '0110000', '1': '0110001', '2': '0110010', '3': '0110011',
+    '4': '0110100', '5': '0110101', '6': '0110110', '7': '0110111',
+    '8': '0111000', '9': '0111001'
+}
+
+# Convert ASCII to numerical input vectors
+X = np.array([[int(bit) for bit in digits[d]] for d in digits.keys()])
+
+# Labels: Even -> 0, Odd -> 1
+Y = np.array([0, 1, 0, 1, 0, 1, 0, 1, 0, 1])
+
+# Initialize weights and bias
+weights = np.random.rand(7)  # 7-bit input
+bias = np.random.rand()
+
+# Learning rate
+alpha = 0.1
+
+# Training Perceptron
+epochs = 100
+for epoch in range(epochs):
+    for i in range(len(X)):
+        weighted_sum = np.dot(X[i], weights) + bias
+        output = 1 if weighted_sum >= 0 else 0
+        error = Y[i] - output
+        weights += alpha * error * X[i]
+        bias += alpha * error
+
+# Function to classify a digit as even or odd
+def classify_digit(digit):
+    if str(digit) not in digits:
+        return "Invalid input. Please enter a digit between 0 and 9."
+    binary_input = np.array([int(bit) for bit in digits[str(digit)]])
+    weighted_sum = np.dot(binary_input, weights) + bias
+    return "Odd" if weighted_sum >= 0 else "Even"
+
+# Take user input
+while True:
+    user_input = input("Enter a digit (0-9) to classify as Even or Odd (or type 'exit' to quit): ")
+    if user_input.lower() == 'exit':
+        break
+    if user_input.isdigit() and 0 <= int(user_input) <= 9:
+        result = classify_digit(int(user_input))
+        print(f"Digit {user_input} is {result}.")
+    else:
+        print("Invalid input. Please enter a single digit between 0 and 9.")
