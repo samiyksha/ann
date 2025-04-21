@@ -1,0 +1,68 @@
+import numpy as np
+
+# Sigmoid activation and its derivative
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+def sigmoid_derivative(x):
+    return x * (1 - x)
+
+# Training data (XOR problem)
+X = np.array([
+    [0, 0],
+    [0, 1],
+    [1, 0],
+    [1, 1]
+])
+
+# Expected outputs
+y = np.array([[0], [1], [1], [0]])
+
+# Seed for reproducibility
+np.random.seed(42)
+
+# Initialize weights and biases
+input_layer_neurons = 2
+hidden_layer_neurons = 4
+output_neurons = 1
+
+# Random weights and biases
+wh = np.random.uniform(size=(input_layer_neurons, hidden_layer_neurons))  # Weights for input → hidden
+bh = np.random.uniform(size=(1, hidden_layer_neurons))                    # Biases for hidden layer
+wo = np.random.uniform(size=(hidden_layer_neurons, output_neurons))      # Weights for hidden → output
+bo = np.random.uniform(size=(1, output_neurons))                          # Biases for output layer
+
+# Training loop
+epochs = 10000
+learning_rate = 0.1
+
+for epoch in range(epochs):
+    # ---- FORWARD PASS ----
+    hidden_input = np.dot(X, wh) + bh
+    hidden_output = sigmoid(hidden_input)
+
+    final_input = np.dot(hidden_output, wo) + bo
+    output = sigmoid(final_input)
+
+    # ---- BACKPROPAGATION ----
+    error = y - output
+    d_output = error * sigmoid_derivative(output)
+
+    error_hidden = d_output.dot(wo.T)
+    d_hidden = error_hidden * sigmoid_derivative(hidden_output)
+
+    # ---- UPDATE WEIGHTS AND BIASES ----
+    wo += hidden_output.T.dot(d_output) * learning_rate
+    bo += np.sum(d_output, axis=0, keepdims=True) * learning_rate
+
+    wh += X.T.dot(d_hidden) * learning_rate
+    bh += np.sum(d_hidden, axis=0, keepdims=True) * learning_rate
+
+    # Print loss occasionally
+    if epoch % 1000 == 0:
+        loss = np.mean(np.square(error))
+        print(f"Epoch {epoch} Loss: {loss:.5f}")
+
+# ---- FINAL OUTPUT ----
+print("\nFinal Output After Training:")
+print(output.round(3))
