@@ -1,67 +1,41 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 
-def linear(x):
-    return x
-
-x = np.linspace(-5,10)
-plt.plot(x,linear(x))
-plt.axis('tight')
-plt.title('Activation Function: linear')
-plt.show()
-
-import numpy as np
-import matplotlib.pyplot as plt
 
 def sigmoid(x):
-    return 1/(1+np.exp(-x))
-
-x = np.linspace(-10,10)
-plt.plot(x,sigmoid(x))
-plt.axis('tight')
-plt.title('Activation Function: sigmoid')
-plt.show()
-
-import numpy as np
-import matplotlib.pyplot as plt
+    return 1 / (1 + np.exp(-x))
 
 def tanh(x):
     return np.tanh(x)
 
-x = np.linspace(-20,20)
-plt.plot(x,tanh(x))
-plt.axis('tight')
-plt.title('Activation Function: tanh')
-plt.show()
-
-import numpy as np
-import matplotlib.pyplot as plt
-
 def relu(x):
-    x1=[]
-    for i in x:
-        if i < 0:
-            x1.append(0)
-        else:
-            x1.append(i)
-    return x1
+    return np.maximum(0, x)
 
-x = np.linspace(-10,10)
-plt.plot(x,relu(x))
-plt.axis('tight')
-plt.title('Activation Function: RELU')
-plt.show()
+def leaky_relu(x, alpha=0.01):
+    return np.where(x > 0, x, alpha * x)
 
-import numpy as np
-import matplotlib.pyplot as plt
+def swish(x):
+    return x * sigmoid(x)
 
-def softmax(x):
-    return np.exp(x) / np.sum(np.exp(x), axis=0)
+x = np.linspace(-5, 5, 400)
 
+y_sigmoid = sigmoid(x)
+y_tanh = tanh(x)
+y_relu = relu(x)
+y_leaky_relu = leaky_relu(x)
+y_swish = swish(x)
 
+sns.set_style("darkgrid")
+#plt.figure(figsize=(10, 6))
+plt.plot(x, y_sigmoid, label='Sigmoid', color='blue')
+# plt.plot(x, y_tanh, label='Tanh', color='red')
+#plt.plot(x, y_relu, label='ReLU', color='green')
+#plt.plot(x, y_leaky_relu, label='Leaky ReLU', color='purple')
+#plt.plot(x, y_swish, label='Swish', color='orange')
 
-x = np.linspace(-10,10)
-plt.plot(x,softmax(x))
-plt.axis('tight')
-plt.title('Activation Function: softmax')
+plt.xlabel("Input")
+plt.ylabel("Output")
+plt.title("Activation Functions in Neural Networks")
+plt.legend()
 plt.show()
